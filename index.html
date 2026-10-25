@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Plataforma de calificaciones</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icono-192.png">
+<link rel="apple-touch-icon" href="icono-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Calificaciones">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#0f6b6b">
+</head>
+<body style="margin:0;background:#f1f4f5;font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;color:#17212b">
+<div id="cargando" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:14px;padding:0 20px;text-align:center">
+  <div style="width:38px;height:38px;border:4px solid #d9eeee;border-top-color:#0f6b6b;border-radius:50%;animation:g 0.9s linear infinite"></div>
+  <div id="msg">Cargando la plataforma…</div>
+</div>
+<style>@keyframes g{to{transform:rotate(360deg)}}</style>
+<script>
+/* Única línea que se cambia: la dirección de la aplicación web de Apps Script (termina en /exec). */
+var APP = 'https://script.google.com/macros/s/AKfycbxBsjQJ4iCXLVmTfbHOoKAmlN7_rxzGyab03UMjACWCiiF0W-1TWI6zLLCZn32S3t1frg/exec';
+
+(function () {
+  var cabeza = document.head.innerHTML;
+  function error(t) {
+    document.getElementById('msg').innerHTML = t + '<br><br><button onclick="location.reload()" style="font:inherit;padding:10px 18px;border:0;border-radius:8px;background:#0f6b6b;color:#fff">Intentar de nuevo</button>';
+  }
+  fetch(APP, { method: 'POST', body: JSON.stringify({ fn: 'paginaWeb', args: [] }), credentials: 'omit', redirect: 'follow' })
+    .then(function (r) { return r.json(); })
+    .then(function (x) {
+      if (!x.ok) throw new Error(x.msg || 'Error del servidor');
+      var h = x.val.replace('<head>', '<head>' + cabeza);
+      document.open(); document.write(h); document.close();
+    })
+    .catch(function (e) {
+      error(navigator.onLine === false ? 'No hay conexión a internet.' : 'No se pudo abrir la plataforma. ' + (e && e.message ? e.message : ''));
+    });
+})();
+</script>
+</body>
+</html>
